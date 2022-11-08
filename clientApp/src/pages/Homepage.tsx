@@ -1,27 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18next from '../shared/lang/i18next';
 import Button from '@mui/material/Button';
 import CurrencyNumberFormat from '../shared/components/CurrencyNumberFormat';
-import { contentL, contentXL, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
+import { contentL, contentS, contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
+import Divider from '@mui/material/Divider';
 
-const AlignEndContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
+const Amount = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  font-family: monospace;
+  font-size: ${spacingM}
 `;
 
-const CenterContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
+const AmountDue = styled(Amount)<{amount: number}>`
+  color: ${props => props.amount >= 0 ? 'green' : 'red'};
+`;
+
+const TotalContainer = styled(Amount)`
+  align-self: center;
+  font-size: ${contentXs};
 `;
 
 const AlignEnd = styled.div`
   display: flex;
   justify-content: flex-end;
+  margin: ${spacingS};
+`;
+
+const PlayerTotals = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: ${spacingM};
+  > * {
+    width: 100%;
+  }
 `;
 
 const PlayersContainer = styled.div`
@@ -60,6 +76,7 @@ const ReceiptColumn = styled.div`
 
 interface Player {
   name: string;
+  amountDue: number;
   receipts: number[];
 }
 
@@ -67,65 +84,83 @@ export function Homepage() {
   const { t } = useTranslation('translation', { i18n: i18next });
   const [total, setTotal] = useState(0);
   const [nextId, setNextId] = useState(0);
-  const [receipts, setReceipts] = useState(new Map<number, Player>);
+  const [players, setPlayers] = useState(new Map<number, Player>);
+
+  useEffect(() => {
+    const playersCopy = new Map(players);
+    Array.from(playersCopy).forEach(([key, player]) => {
+      player.amountDue = getAmountDue(key);
+    });
+    setPlayers(playersCopy);
+  }, [total]);
 
   const _addColumn = () => {
-    const receiptCopy = new Map(receipts);
-    const newPlayer = { name: `Player ${nextId}`, receipts: [] };
-    receiptCopy.set(nextId, newPlayer);
-    setReceipts(receiptCopy);
+    const playersCopy = new Map(players);
+    const newPlayer = { name: `Player ${nextId}`, receipts: [], amountDue: 0 };
+    playersCopy.set(nextId, newPlayer);
+    setPlayers(playersCopy);
     setNextId(nextId + 1);
   };
 
   const _addReceipt = (key: number) => {
-    const receiptCopy = new Map(receipts);
-    const player = receiptCopy.get(key);
+    const playersCopy = new Map(players);
+    const player = playersCopy.get(key);
     if (player !== undefined) {
       player.receipts.push(0);
-      receiptCopy.set(key, player);
-      setReceipts(receiptCopy);
+      playersCopy.set(key, player);
+      setPlayers(playersCopy);
     }
   };
 
   const handleNameChange = (key: number, name : string) => {
-    const receiptCopy = new Map(receipts);
-    const player = receiptCopy.get(key);
+    const playersCopy = new Map(players);
+    const player = playersCopy.get(key);
     if (player !== undefined) {
       player.name = name;
-      receiptCopy.set(key, player);
-      setReceipts(receiptCopy);
+      playersCopy.set(key, player);
+      setPlayers(playersCopy);
     }
   };
 
   const handleReceiptChange = (key: number, receiptIndex: number, receipt: number) => {
-    const receiptCopy = new Map(receipts);
-    const player = receiptCopy.get(key);
+    const playersCopy = new Map(players);
+    const player = playersCopy.get(key);
     if (player !== undefined) {
       player.receipts[receiptIndex] = receipt;
-      receiptCopy.set(key, player);
-      setReceipts(receiptCopy);
+      playersCopy.set(key, player);
+      setPlayers(playersCopy);
       recalculateTotal();
     }
   };
 
+  const getAmountDue = (key: number) : number => {
+    const player = players.get(key);
+    if (player === undefined) {
+      return -1;
+    }
+    const totalPaid = player.receipts.reduce((a, b) => a + b, 0);
+    const totalForEach = total / players.size;
+    return totalPaid - totalForEach;
+  };
+
   const recalculateTotal = () => {
-    const newTotal = Array.from(receipts)
+    const newTotal = Array.from(players)
       .map(([key, player]) => player.receipts.reduce((acc, curr) => acc + curr, 0))
       .reduce((acc, curr) => acc + curr, 0);
     setTotal(newTotal);
   };
 
   return <>
-    <CenterContainer>
+    <TotalContainer>
       <span> Total : {total} </span>
-    </CenterContainer>
-    <AlignEndContainer>
+    </TotalContainer>
+    <AlignEnd>
       <Button variant="contained" color="secondary" onClick={() => _addColumn()}> 
         {t('receipt.addPerson')}
       </Button>
-    </AlignEndContainer>
+    </AlignEnd>
     <PlayersContainer>
-      {Array.from(receipts).map(([key, value]) => 
+      {Array.from(players).map(([key, value]) => 
         <PlayerColumn key={key}>
           <TextField
             id={`playerName${key}`}
@@ -150,7 +185,6 @@ export function Homepage() {
                   />
                 </Receipt>
               )}
-              <span> Total : {value.receipts.reduce( (acc, val) => acc + val)}</span>
             </ReceiptColumn>
           }
           <AlignEnd>
@@ -158,6 +192,28 @@ export function Homepage() {
               <span>{t('receipt.addReceipt')}</span>
             </Button>
           </AlignEnd>
+          <PlayerTotals>
+            <Amount>
+              {t('receipt.contributedAmount')}: 
+              <AlignEnd>
+                {value.receipts.length > 0 ? 
+                  value.receipts.reduce((acc, val) => acc + val) : 0 }
+              </AlignEnd>
+            </Amount>
+            -
+            <Amount style={{color: 'red'}}>{t('receipt.contributionAmount')}: <AlignEnd> {total / players.size} </AlignEnd> </Amount>
+            --------------------------------
+            <AmountDue amount={value.amountDue}> 
+              {t('receipt.amountDue')}:
+              <AlignEnd> 
+                {value.amountDue === 0 ? 
+                  value.amountDue : value.amountDue >= 0 ?
+                    `+ ${value.amountDue}`
+                    : `- ${value.amountDue}`
+                }
+              </AlignEnd>
+            </AmountDue>
+          </PlayerTotals>
         </PlayerColumn>
       )}
     </PlayersContainer>

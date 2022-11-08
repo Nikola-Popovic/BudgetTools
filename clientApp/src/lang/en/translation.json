@@ -17,6 +17,9 @@
     "receipt": {
         "addPerson": "Add person",
         "addReceipt": "Add a receipt ",
+        "amountDue": "Amount due",
+        "contributedAmount": "Payer contribution",
+        "contributionAmount": "Contribution amount",
         "playerName": "Name",
         "receiptNumber": "Receipt #"
     }
