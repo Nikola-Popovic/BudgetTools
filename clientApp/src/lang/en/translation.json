@@ -1,0 +1,23 @@
+{
+    "appBar": {
+        "altTitle": "Receipt Sharer",
+        "title": "Receipt Sharer",
+        "subtitle": "by Nikola Popovic "
+    },
+    "general": {
+        "add": "Add",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "delete": "Delete",
+        "update": "Update"
+    },
+    "homepage": {
+        "title": "This is the homepage"
+    },
+    "receipt": {
+        "addPerson": "Add person",
+        "addReceipt": "Add a receipt ",
+        "playerName": "Name",
+        "receiptNumber": "Receipt #"
+    }
+}

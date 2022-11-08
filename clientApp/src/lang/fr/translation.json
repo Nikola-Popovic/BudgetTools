@@ -1,0 +1,14 @@
+{
+    "appBar": {
+        "altTitle": "React Starter",
+        "title": "React Starter",
+        "subtitle": "par Nikola Popovic "
+    },
+    "general": {
+        "add": "Ajouter",
+        "cancel": "Annuler",
+        "confirm": "Confirmer",
+        "delete": "Supprimer",
+        "update": "Modifier"
+    }
+}
