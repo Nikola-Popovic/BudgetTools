@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import i18next from '../shared/lang/i18next';
 import Button from '@mui/material/Button';
-import { contentL, contentXL, contentXXL, spacingL, spacingM } from '../shared/styling/StylingConstants';
+import CurrencyNumberFormat from '../shared/components/CurrencyNumberFormat';
+import { contentL, contentXL, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
 
@@ -38,6 +39,10 @@ const PlayerColumn = styled.div`
   padding: ${spacingL};
   margin: ${spacingM};
   border: 1px solid;
+`;
+
+const Receipt = styled.div`
+  margin: ${spacingS};
 `;
 
 const ReceiptColumn = styled.div`
@@ -132,14 +137,19 @@ export function Homepage() {
           />
           { value.receipts.length > 0 && 
             <ReceiptColumn>
-              {value.receipts.map((receipt, index) => <TextField 
-                id={`receipt${key}-${index}`}
-                key={index}
-                label={t('receipt.receiptNumber') + index}
-                variant="outlined"
-                value={receipt}
-                onChange={(e) => handleReceiptChange(key, index, parseInt(e.target.value))}
-              />)}
+              {value.receipts.map((receipt, index) => 
+                <Receipt key={index}>
+                  <TextField 
+                    id={`receipt${key}-${index}`}
+                    key={index}
+                    label={t('receipt.receiptNumber') + index}
+                    variant="outlined"
+                    value={receipt}
+                    InputProps={{ inputComponent: CurrencyNumberFormat as any }}
+                    onChange={(e) => handleReceiptChange(key, index, parseFloat(e.target.value))}
+                  />
+                </Receipt>
+              )}
               <span> Total : {value.receipts.reduce( (acc, val) => acc + val)}</span>
             </ReceiptColumn>
           }
