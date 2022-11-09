@@ -7,6 +7,7 @@ import { contentL, contentS, contentXL, contentXs, contentXXL, spacingL, spacing
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
 import Divider from '@mui/material/Divider';
+import CurrencyFormat from '../shared/components/CurrencyFormat';
 
 const Amount = styled.div`
   display: grid;
@@ -85,7 +86,11 @@ export function Homepage() {
   const [total, setTotal] = useState(0);
   const [nextId, setNextId] = useState(0);
   const [players, setPlayers] = useState(new Map<number, Player>);
-
+  const formatter = new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: 'CAD',
+  });
+  
   useEffect(() => {
     const playersCopy = new Map(players);
     Array.from(playersCopy).forEach(([key, player]) => {
@@ -96,9 +101,10 @@ export function Homepage() {
 
   const _addColumn = () => {
     const playersCopy = new Map(players);
-    const newPlayer = { name: `Player ${nextId}`, receipts: [], amountDue: 0 };
+    const newPlayer = { name: `Payer ${nextId}`, receipts: [], amountDue: 0 };
     playersCopy.set(nextId, newPlayer);
     setPlayers(playersCopy);
+    recalculateTotal();
     setNextId(nextId + 1);
   };
 
@@ -143,7 +149,7 @@ export function Homepage() {
     return totalPaid - totalForEach;
   };
 
-  const recalculateTotal = () => {
+  const recalculateTotal = () : void => {
     const newTotal = Array.from(players)
       .map(([key, player]) => player.receipts.reduce((acc, curr) => acc + curr, 0))
       .reduce((acc, curr) => acc + curr, 0);
@@ -152,7 +158,8 @@ export function Homepage() {
 
   return <>
     <TotalContainer>
-      <span> Total : {total} </span>
+      <span> Total :</span>
+      <CurrencyFormat value={total}/> 
     </TotalContainer>
     <AlignEnd>
       <Button variant="contained" color="secondary" onClick={() => _addColumn()}> 
@@ -196,21 +203,20 @@ export function Homepage() {
             <Amount>
               {t('receipt.contributedAmount')}: 
               <AlignEnd>
-                {value.receipts.length > 0 ? 
-                  value.receipts.reduce((acc, val) => acc + val) : 0 }
+                <CurrencyFormat value={value.receipts.length > 0 ? 
+                  value.receipts.reduce((acc, val) => acc + val) : 0} />
               </AlignEnd>
             </Amount>
             -
-            <Amount style={{color: 'red'}}>{t('receipt.contributionAmount')}: <AlignEnd> {total / players.size} </AlignEnd> </Amount>
+            <Amount style={{color: 'red'}}>{t('receipt.contributionAmount')}: 
+              <AlignEnd> <CurrencyFormat value={total / players.size} /> </AlignEnd> 
+            </Amount>
             --------------------------------
             <AmountDue amount={value.amountDue}> 
               {t('receipt.amountDue')}:
-              <AlignEnd> 
-                {value.amountDue === 0 ? 
-                  value.amountDue : value.amountDue >= 0 ?
-                    `+ ${value.amountDue}`
-                    : `- ${value.amountDue}`
-                }
+              <AlignEnd>
+                {value.amountDue > 0 && '+'}
+                <CurrencyFormat value={value.amountDue}/>
               </AlignEnd>
             </AmountDue>
           </PlayerTotals>

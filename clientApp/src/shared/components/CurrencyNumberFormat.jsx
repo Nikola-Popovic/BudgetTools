@@ -17,9 +17,10 @@ const CurrencyNumberFormat = React.forwardRef(function NumberFormatCustom(props,
           },
         });
       }}
-      thousandSeparator
+      decimalScale={3}
+      thousandSeparator={false}
       isNumericString
-      prefix="$"
+      suffix='$'
     />
   );
 });
