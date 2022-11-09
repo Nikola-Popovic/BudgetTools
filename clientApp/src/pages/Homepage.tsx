@@ -97,14 +97,13 @@ export function Homepage() {
       player.amountDue = getAmountDue(key);
     });
     setPlayers(playersCopy);
-  }, [total]);
+  }, [total, nextId]);
 
   const _addColumn = () => {
     const playersCopy = new Map(players);
     const newPlayer = { name: `Payer ${nextId}`, receipts: [], amountDue: 0 };
     playersCopy.set(nextId, newPlayer);
     setPlayers(playersCopy);
-    recalculateTotal();
     setNextId(nextId + 1);
   };
 
