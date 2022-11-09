@@ -2,7 +2,7 @@
 
 Small app to track receipts shared by multiple payers.
 
-![Receipt Tracker](docs/receiptSharer.gif)
+![Receipt Tracker](https://github.com/Nikola-Popovic/ReceiptTracker/blob/main/doc/receiptSharer.gif)
 
 # Installation
 1. Clone the project
