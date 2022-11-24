@@ -1,7 +1,7 @@
 {
     "appBar": {
-        "altTitle": "Receipt Sharer",
-        "title": "Receipt Sharer",
+        "altTitle": "Management Tools",
+        "title": "Management Tools",
         "subtitle": "by Nikola Popovic "
     },
     "general": {
@@ -22,5 +22,10 @@
         "contributionAmount": "Contribution amount",
         "playerName": "Name",
         "receiptNumber": "Receipt #"
+    }, 
+    "nav" : {
+        "home": "Home",
+        "receiptTracker": "Receipt Tracker",
+        "timeBudget": "Time Budget"
     }
 }
