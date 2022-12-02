@@ -87,6 +87,7 @@ export function ReceiptTracker() {
   const { t } = useTranslation('translation', { i18n: i18next });
   const [total, setTotal] = useState(0);
   const [nextId, setNextId] = useState(0);
+  const [nextReceiptId, setReceiptId] = useState(0);
   const [players, setPayers] = useState(new Map<number, Payer>);
   
   useEffect(() => {
@@ -105,13 +106,25 @@ export function ReceiptTracker() {
     setNextId(nextId + 1);
   };
 
-  const _addReceipt = (key: number) => {
+  const _addReceipt = (playerId: number) => {
+    const playersCopy = new Map(players);
+    const player = playersCopy.get(playerId);
+    if (player !== undefined) {
+      player.receipts.push({ id: nextReceiptId, total: 0, items: [], name: '' });
+      playersCopy.set(playerId, player);
+      setPayers(playersCopy);
+      setReceiptId(nextReceiptId + 1);
+    }
+  };
+
+  const handleReceiptChange = (key: number, receiptIndex: number, newTotal: number) => {
     const playersCopy = new Map(players);
     const player = playersCopy.get(key);
     if (player !== undefined) {
-      player.receipts.push(0);
+      player.receipts[receiptIndex].total = newTotal;
       playersCopy.set(key, player);
       setPayers(playersCopy);
+      recalculateTotal();
     }
   };
 
@@ -136,30 +149,19 @@ export function ReceiptTracker() {
     }
   };
 
-  const handleReceiptChange = (key: number, receiptIndex: number, receipt: number) => {
-    const playersCopy = new Map(players);
-    const player = playersCopy.get(key);
-    if (player !== undefined) {
-      player.receipts[receiptIndex] = receipt;
-      playersCopy.set(key, player);
-      setPayers(playersCopy);
-      recalculateTotal();
-    }
-  };
-
   const getAmountDue = (key: number) : number => {
     const player = players.get(key);
     if (player === undefined) {
       return -1;
     }
-    const totalPaid = player.receipts.reduce((a, b) => a + b, 0);
+    const totalPaid = player.receipts.reduce((acc, receipt) => acc + receipt.total, 0);
     const totalForEach = total / players.size;
     return totalPaid - totalForEach;
   };
 
   const recalculateTotal = () : void => {
     const newTotal = Array.from(players)
-      .map(([key, player]) => player.receipts.reduce((acc, curr) => acc + curr, 0))
+      .map(([key, player]) => player.receipts.reduce((acc, curr) => acc + curr.total, 0))
       .reduce((acc, curr) => acc + curr, 0);
     setTotal(newTotal);
   };
@@ -190,11 +192,11 @@ export function ReceiptTracker() {
               {value.receipts.map((receipt, index) => 
                 <Receipt key={index}>
                   <TextField 
-                    id={`receipt${key}-${index}`}
+                    id={`receipt${key}-${receipt.id}`}
                     key={index}
                     label={t('receipt.receiptNumber') + index}
                     variant="outlined"
-                    value={receipt}
+                    value={receipt.total}
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
                     onChange={(e) => handleReceiptChange(key, index, parseFloat(e.target.value))}
                   />
@@ -216,7 +218,7 @@ export function ReceiptTracker() {
               {t('receipt.contributedAmount')}: 
               <AlignEnd>
                 <CurrencyFormat value={value.receipts.length > 0 ? 
-                  value.receipts.reduce((acc, val) => acc + val) : 0} />
+                  value.receipts.reduce((acc, val) => acc + val.total, 0) : 0} />
               </AlignEnd>
             </Amount>
             -

@@ -9,5 +9,5 @@ export interface Payer {
     id: number;
     name: string;
     amountDue: number;
-    receipts: number[];
+    receipts: Receipt[];
 }
