@@ -1,7 +1,7 @@
 {
     "appBar": {
-        "altTitle": "Management Tools",
-        "title": "Management Tools",
+        "altTitle": "spliter.io",
+        "title": "spliter.io",
         "subtitle": "by Nikola Popovic "
     },
     "general": {
@@ -25,7 +25,7 @@
     }, 
     "nav" : {
         "home": "Home",
-        "receiptTracker": "Receipt Tracker",
-        "timeBudget": "Time Budget"
+        "receiptTracker": "Receipt Spliter",
+        "timeBudget": "Time Spliter"
     }
 }

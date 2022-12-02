@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import i18next from '../shared/lang/i18next';
 import Button from '@mui/material/Button';
 import CurrencyNumberFormat from '../shared/components/CurrencyNumberFormat';
-import { contentL, contentS, contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
+import { contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
-import Divider from '@mui/material/Divider';
+import { Clear, Edit } from '@mui/icons-material';
 import CurrencyFormat from '../shared/components/CurrencyFormat';
+import { Payer } from '../core/models/ReceiptTracker/Payer';
 
 const Amount = styled.div`
   display: grid;
@@ -31,7 +32,7 @@ const AlignEnd = styled.div`
   margin: ${spacingS};
 `;
 
-const PlayerTotals = styled.div`
+const PayerTotals = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -41,12 +42,12 @@ const PlayerTotals = styled.div`
   }
 `;
 
-const PlayersContainer = styled.div`
+const PayersContainer = styled.div`
   display: flex;
   flex-direction: row;
 `;
 
-const PlayerColumn = styled.div`
+const PayerColumn = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -59,9 +60,16 @@ const PlayerColumn = styled.div`
 `;
 
 const Receipt = styled.div`
+  display: flex;
+  flex-direction: row;
   margin: ${spacingS};
 `;
 
+const ReceiptActions = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: ${spacingS};
+`;
 const ReceiptColumn = styled.div`
   display: flex;
   flex-direction: column;
@@ -75,35 +83,25 @@ const ReceiptColumn = styled.div`
   border: 2px dashed;
 `;
 
-interface Player {
-  name: string;
-  amountDue: number;
-  receipts: number[];
-}
-
 export function ReceiptTracker() {
   const { t } = useTranslation('translation', { i18n: i18next });
   const [total, setTotal] = useState(0);
   const [nextId, setNextId] = useState(0);
-  const [players, setPlayers] = useState(new Map<number, Player>);
-  const formatter = new Intl.NumberFormat('en-CA', {
-    style: 'currency',
-    currency: 'CAD',
-  });
+  const [players, setPayers] = useState(new Map<number, Payer>);
   
   useEffect(() => {
     const playersCopy = new Map(players);
     Array.from(playersCopy).forEach(([key, player]) => {
       player.amountDue = getAmountDue(key);
     });
-    setPlayers(playersCopy);
+    setPayers(playersCopy);
   }, [total, nextId]);
 
   const _addColumn = () => {
     const playersCopy = new Map(players);
-    const newPlayer = { name: `Payer ${nextId}`, receipts: [], amountDue: 0 };
-    playersCopy.set(nextId, newPlayer);
-    setPlayers(playersCopy);
+    const newPayer = { name: `Payer ${nextId}`, receipts: [], amountDue: 0, id: nextId };
+    playersCopy.set(nextId, newPayer);
+    setPayers(playersCopy);
     setNextId(nextId + 1);
   };
 
@@ -113,7 +111,18 @@ export function ReceiptTracker() {
     if (player !== undefined) {
       player.receipts.push(0);
       playersCopy.set(key, player);
-      setPlayers(playersCopy);
+      setPayers(playersCopy);
+    }
+  };
+
+  const _removeReceipt = (key: number, index: number) => {
+    const playersCopy = new Map(players);
+    const player = playersCopy.get(key);
+    if (player !== undefined) {
+      player.receipts.splice(index, 1);
+      playersCopy.set(key, player);
+      setPayers(playersCopy);
+      recalculateTotal();
     }
   };
 
@@ -123,7 +132,7 @@ export function ReceiptTracker() {
     if (player !== undefined) {
       player.name = name;
       playersCopy.set(key, player);
-      setPlayers(playersCopy);
+      setPayers(playersCopy);
     }
   };
 
@@ -133,7 +142,7 @@ export function ReceiptTracker() {
     if (player !== undefined) {
       player.receipts[receiptIndex] = receipt;
       playersCopy.set(key, player);
-      setPlayers(playersCopy);
+      setPayers(playersCopy);
       recalculateTotal();
     }
   };
@@ -165,9 +174,9 @@ export function ReceiptTracker() {
         {t('receipt.addPerson')}
       </Button>
     </AlignEnd>
-    <PlayersContainer>
+    <PayersContainer>
       {Array.from(players).map(([key, value]) => 
-        <PlayerColumn key={key}>
+        <PayerColumn key={key}>
           <TextField
             id={`playerName${key}`}
             key={key}
@@ -189,6 +198,10 @@ export function ReceiptTracker() {
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
                     onChange={(e) => handleReceiptChange(key, index, parseFloat(e.target.value))}
                   />
+                  <ReceiptActions>
+                    <Edit />
+                    <Clear onClick={() => _removeReceipt(key, index)}/>
+                  </ReceiptActions>
                 </Receipt>
               )}
             </ReceiptColumn>
@@ -198,7 +211,7 @@ export function ReceiptTracker() {
               <span>{t('receipt.addReceipt')}</span>
             </Button>
           </AlignEnd>
-          <PlayerTotals>
+          <PayerTotals>
             <Amount>
               {t('receipt.contributedAmount')}: 
               <AlignEnd>
@@ -218,9 +231,9 @@ export function ReceiptTracker() {
                 <CurrencyFormat value={value.amountDue}/>
               </AlignEnd>
             </AmountDue>
-          </PlayerTotals>
-        </PlayerColumn>
+          </PayerTotals>
+        </PayerColumn>
       )}
-    </PlayersContainer>
+    </PayersContainer>
   </>;
 }
