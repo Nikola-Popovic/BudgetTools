@@ -6,7 +6,7 @@ export interface Receipt {
 }
 
 export interface Payer {
-    id: number;
+    id?: number;
     name: string;
     amountDue: number;
     receipts: Receipt[];

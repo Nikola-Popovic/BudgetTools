@@ -9,6 +9,7 @@ import { TextField } from '@mui/material';
 import { Clear, Edit } from '@mui/icons-material';
 import CurrencyFormat from '../shared/components/CurrencyFormat';
 import { Payer } from '../core/models/ReceiptTracker/Payer';
+import { useReceiptService } from '../core/services/ReceiptService';
 
 const Amount = styled.div`
   display: grid;
@@ -85,68 +86,62 @@ const ReceiptColumn = styled.div`
 
 export function ReceiptTracker() {
   const { t } = useTranslation('translation', { i18n: i18next });
+  const receiptService = useReceiptService();
   const [total, setTotal] = useState(0);
-  const [nextId, setNextId] = useState(0);
-  const [nextReceiptId, setReceiptId] = useState(0);
   const [players, setPayers] = useState(new Map<number, Payer>);
   
+  const refreshPlayers = async () => {
+    const data = await receiptService.getPayers();
+    setPayers(data);
+  };
+
+  const refreshPlayer = async (key: number) => {
+    const data = await receiptService.getPayer(key);
+    if (data === undefined) {
+      return;
+    }
+    const playersCopy = new Map(players);
+    playersCopy.set(key, data);
+    setPayers(playersCopy);
+  };
+
+  useEffect(() => {
+    refreshPlayers();
+  }, []);
+
   useEffect(() => {
     const playersCopy = new Map(players);
     Array.from(playersCopy).forEach(([key, player]) => {
       player.amountDue = getAmountDue(key);
     });
     setPayers(playersCopy);
-  }, [total, nextId]);
+    recalculateTotal();
+  }, [players]);
 
   const _addColumn = () => {
-    const playersCopy = new Map(players);
-    const newPayer = { name: `Payer ${nextId}`, receipts: [], amountDue: 0, id: nextId };
-    playersCopy.set(nextId, newPayer);
-    setPayers(playersCopy);
-    setNextId(nextId + 1);
+    const newPayer = { name: 'Payer', receipts: [], amountDue: 0};
+    receiptService.addPayer(newPayer);
+    refreshPlayers();
   };
 
   const _addReceipt = (playerId: number) => {
-    const playersCopy = new Map(players);
-    const player = playersCopy.get(playerId);
-    if (player !== undefined) {
-      player.receipts.push({ id: nextReceiptId, total: 0, items: [], name: '' });
-      playersCopy.set(playerId, player);
-      setPayers(playersCopy);
-      setReceiptId(nextReceiptId + 1);
-    }
+    receiptService.addReceipt(playerId);
+    refreshPlayer(playerId);
   };
 
-  const handleReceiptChange = (key: number, receiptIndex: number, newTotal: number) => {
-    const playersCopy = new Map(players);
-    const player = playersCopy.get(key);
-    if (player !== undefined) {
-      player.receipts[receiptIndex].total = newTotal;
-      playersCopy.set(key, player);
-      setPayers(playersCopy);
-      recalculateTotal();
-    }
+  const handleReceiptChange = (playerId: number, receiptId: number, newTotal: number) => {
+    receiptService.updateReceiptTotal(playerId, receiptId, newTotal);
+    refreshPlayer(playerId);
   };
 
-  const _removeReceipt = (key: number, index: number) => {
-    const playersCopy = new Map(players);
-    const player = playersCopy.get(key);
-    if (player !== undefined) {
-      player.receipts.splice(index, 1);
-      playersCopy.set(key, player);
-      setPayers(playersCopy);
-      recalculateTotal();
-    }
+  const _removeReceipt = (playerId: number, receiptId: number) => {
+    receiptService.removeReceipt(playerId, receiptId);
+    refreshPlayer(playerId);
   };
 
   const handleNameChange = (key: number, name : string) => {
-    const playersCopy = new Map(players);
-    const player = playersCopy.get(key);
-    if (player !== undefined) {
-      player.name = name;
-      playersCopy.set(key, player);
-      setPayers(playersCopy);
-    }
+    receiptService.changePlayerName(key, name);
+    refreshPlayers();
   };
 
   const getAmountDue = (key: number) : number => {
@@ -166,7 +161,7 @@ export function ReceiptTracker() {
     setTotal(newTotal);
   };
 
-  return <>
+  return <React.Suspense fallback="loading...">
     <TotalContainer>
       <span> Total :</span>
       <CurrencyFormat value={total}/> 
@@ -190,19 +185,19 @@ export function ReceiptTracker() {
           { value.receipts.length > 0 && 
             <ReceiptColumn>
               {value.receipts.map((receipt, index) => 
-                <Receipt key={index}>
+                <Receipt key={receipt.id}>
                   <TextField 
                     id={`receipt${key}-${receipt.id}`}
-                    key={index}
+                    key={receipt.id}
                     label={t('receipt.receiptNumber') + index}
                     variant="outlined"
                     value={receipt.total}
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
-                    onChange={(e) => handleReceiptChange(key, index, parseFloat(e.target.value))}
+                    onChange={(e) => handleReceiptChange(key, receipt.id, parseFloat(e.target.value))}
                   />
                   <ReceiptActions>
                     <Edit />
-                    <Clear onClick={() => _removeReceipt(key, index)}/>
+                    <Clear onClick={() => _removeReceipt(key, receipt.id)}/>
                   </ReceiptActions>
                 </Receipt>
               )}
@@ -237,5 +232,5 @@ export function ReceiptTracker() {
         </PayerColumn>
       )}
     </PayersContainer>
-  </>;
+  </React.Suspense>;
 }

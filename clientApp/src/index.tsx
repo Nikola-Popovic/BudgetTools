@@ -5,12 +5,15 @@ import App from './App';
 
 import reportWebVitals from './reportWebVitals';
 import ColorThemeProvider from './shared/theme/ColorTheme';
+import GlobalServices from './shared/services/GlobalServices';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 root.render(
   <React.StrictMode>
     <ColorThemeProvider>
-      <App />
+      <GlobalServices>
+        <App />
+      </GlobalServices>
     </ColorThemeProvider>
   </React.StrictMode>
 );
