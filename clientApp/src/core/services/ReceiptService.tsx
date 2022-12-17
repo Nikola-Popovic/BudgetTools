@@ -1,12 +1,13 @@
 import React, { createContext, FC } from 'react';
 import { ServiceProps } from '../../shared/services/Types';
-import { Payer } from '../models/ReceiptTracker/Payer';
+import { Payer, Receipt } from '../models/ReceiptTracker/Payer';
 
 export interface IReceiptService {
   getPayers(): Promise<Map<number, Payer>>;
   getPayer(id: number): Promise<Payer | undefined>;
   addPayer(card: Payer): Promise<void>;
   changePlayerName(id: number, name: string): Promise<void>
+  getReceipt(receiptId: number): Promise<Receipt | undefined>;
   addReceipt(payerId: number): Promise<void>;
   removeReceipt(payerId: number, receiptId: number): Promise<void>;
   updateReceiptTotal(payerId: number, receiptId: number, total: number): Promise<void>;
@@ -41,9 +42,20 @@ class ReceiptServiceImpl implements IReceiptService {
   async addReceipt(payerId: number): Promise<void> {
     const player = await this.getPayer(payerId);
     if (player !== undefined) {
-      player.receipts.push({ id: this._nextReceiptId, total: 0, items: [], name: '' });
+      player.receipts.push({ id: this._nextReceiptId, total: 0, items: [], name: `Receipt ${this._nextReceiptId}` });
       this._nextReceiptId++;
     }
+  }
+
+  async getReceipt(receiptId: number): Promise<Receipt | undefined> {
+    let receipt: Receipt | undefined = undefined;
+    this._players.forEach(player => {
+      const found = player.receipts.find(r => r.id === receiptId);
+      if (found !== undefined) {
+        receipt = found;
+      }
+    });
+    return receipt;
   }
 
   async updateReceiptTotal(payerId: number, receiptId: number, total: number): Promise<void> {

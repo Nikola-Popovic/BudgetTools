@@ -10,6 +10,7 @@ import { Clear, Edit } from '@mui/icons-material';
 import CurrencyFormat from '../shared/components/CurrencyFormat';
 import { Payer } from '../core/models/ReceiptTracker/Payer';
 import { useReceiptService } from '../core/services/ReceiptService';
+import { useNavigate } from 'react-router-dom';
 
 const Amount = styled.div`
   display: grid;
@@ -87,6 +88,7 @@ const ReceiptColumn = styled.div`
 export function ReceiptTracker() {
   const { t } = useTranslation('translation', { i18n: i18next });
   const receiptService = useReceiptService();
+  const navigate = useNavigate();
   const [total, setTotal] = useState(0);
   const [players, setPayers] = useState(new Map<number, Payer>);
   
@@ -156,9 +158,13 @@ export function ReceiptTracker() {
 
   const recalculateTotal = () : void => {
     const newTotal = Array.from(players)
-      .map(([key, player]) => player.receipts.reduce((acc, curr) => acc + curr.total, 0))
+      .map(([_, player]) => player.receipts.reduce((acc, curr) => acc + curr.total, 0))
       .reduce((acc, curr) => acc + curr, 0);
     setTotal(newTotal);
+  };
+
+  const handleEditReceipt = (receiptId: number) => {
+    navigate(`/receiptTracker/receipt/${receiptId}`);
   };
 
   return <React.Suspense fallback="loading...">
@@ -189,14 +195,14 @@ export function ReceiptTracker() {
                   <TextField 
                     id={`receipt${key}-${receipt.id}`}
                     key={receipt.id}
-                    label={t('receipt.receiptNumber') + index}
+                    label={receipt.name}
                     variant="outlined"
                     value={receipt.total}
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
                     onChange={(e) => handleReceiptChange(key, receipt.id, parseFloat(e.target.value))}
                   />
                   <ReceiptActions>
-                    <Edit />
+                    <Edit onClick={() => handleEditReceipt(receipt.id)}/>
                     <Clear onClick={() => _removeReceipt(key, receipt.id)}/>
                   </ReceiptActions>
                 </Receipt>

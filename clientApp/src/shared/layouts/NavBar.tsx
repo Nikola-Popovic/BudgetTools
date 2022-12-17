@@ -63,8 +63,6 @@ export interface INavBarProps {
 export function NavBar(props : INavBarProps) {
   const { t } = useTranslation('translation', { i18n: i18next });
   return <Bar isVisible={props.isVisible}>
-    <NavLink id='home' href='/'> {t('nav.home')} </NavLink>
     <NavLink id='receiptTracker' href='/receiptTracker'> {t('nav.receiptTracker')} </NavLink>
-    <NavLink id='timeBudget' href='/timeBudget'> {t('nav.timeBudget')} </NavLink>
   </Bar>;
 }

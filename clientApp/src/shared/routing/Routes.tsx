@@ -1,22 +1,21 @@
 import React from 'react';
-import { Homepage } from '../../pages/Homepage';
 import { ReceiptTracker } from '../../pages/ReceiptTracker';
-import { TimeBudget } from '../../pages/TimeBudget';
 import {
-  createBrowserRouter,
+  createBrowserRouter, Navigate,
 } from 'react-router-dom';
+import { ModifyReceiptPage } from '../../pages/Receipt/ModifyReceiptPage';
 
 export const Router = createBrowserRouter([
   {
-    path: '/',
-    element: <Homepage />
-  },
-  {
     path: '/receiptTracker',
-    element: <ReceiptTracker />
+    element: <ReceiptTracker />,
   },
   {
-    path: '/timeBudget',
-    element: <TimeBudget />
+    path: '/receiptTracker/receipt/:id',
+    element: <ModifyReceiptPage />
+  },
+  {
+    path: '',
+    element: <Navigate to="/receiptTracker" replace/>,
   }
-]);
+], );
