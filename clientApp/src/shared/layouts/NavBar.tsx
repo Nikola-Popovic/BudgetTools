@@ -4,6 +4,7 @@ import { ColorConstants } from '../styling/ColorConstants';
 import { FONT_FAMILLY, spacingS } from '../styling/StylingConstants';
 import { useTranslation } from 'react-i18next';
 import i18next from '../lang/i18next';
+import { Link } from 'react-router-dom';
 
 export const APP_BAR_HEIGHT = '5vh';
 
@@ -22,7 +23,7 @@ const Bar = styled.div<{isVisible: boolean}>`
     animation: ${props => props.isVisible ? 'slideIn 1s ease-in-out' : 'slideOut 1s ease-in-out'};
 `;
 
-const NavLink = styled.a`
+const NavLink = styled(Link)`
     display: block;
     position: relative;
     text-decoration: none;
@@ -63,6 +64,6 @@ export interface INavBarProps {
 export function NavBar(props : INavBarProps) {
   const { t } = useTranslation('translation', { i18n: i18next });
   return <Bar isVisible={props.isVisible}>
-    <NavLink id='receiptTracker' href='/receiptTracker'> {t('nav.receiptTracker')} </NavLink>
+    <NavLink id='receiptTracker' to='/receiptTracker'> {t('nav.receiptTracker')} </NavLink>
   </Bar>;
 }
