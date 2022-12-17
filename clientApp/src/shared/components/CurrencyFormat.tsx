@@ -4,7 +4,7 @@ interface ICurrencyFormatProps {
   value: number;
 }
 
-function CurrencyFormat(props: ICurrencyFormatProps) {
+export function CurrencyFormat(props: ICurrencyFormatProps) {
   const formatter = new Intl.NumberFormat('en-CA', {
     style: 'currency',
     currency: 'CAD',
@@ -15,5 +15,3 @@ function CurrencyFormat(props: ICurrencyFormatProps) {
     </span>
   );
 }
-
-export default CurrencyFormat;

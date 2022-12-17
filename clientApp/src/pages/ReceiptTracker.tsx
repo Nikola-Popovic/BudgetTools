@@ -7,7 +7,7 @@ import { contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS } from '
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
 import { Clear, Edit } from '@mui/icons-material';
-import CurrencyFormat from '../shared/components/CurrencyFormat';
+import { CurrencyFormat } from '../shared/components/CurrencyFormat';
 import { Payer } from '../core/models/ReceiptTracker/Payer';
 import { useReceiptService } from '../core/services/ReceiptService';
 import { useNavigate } from 'react-router-dom';

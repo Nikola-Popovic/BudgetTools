@@ -7,6 +7,7 @@ import { useReceiptService } from '../../core/services/ReceiptService';
 import i18next from '../../shared/lang/i18next';
 import { contentM, contentXL, contentXXL, spacingM, spacingXs } from '../../shared/styling/StylingConstants';
 import Button from '@mui/material/Button';
+import { CurrencyFormat } from '../../shared/components/CurrencyFormat';
 
 const UpdateContainer = styled.div`
     display: flex;
@@ -109,19 +110,19 @@ export function ModifyReceiptPage() {
         <LineDivider />
         <ReceiptBodyItem>
           <div> Subtotal : </div>
-          <div> ${receipt.total} </div>
+          <CurrencyFormat value={receipt.total} />
         </ReceiptBodyItem>
         <ReceiptBodyItem>
           <div> TPS(5%) : </div>
-          <div> ${receipt.total*0.05} </div>
+          <CurrencyFormat value={receipt.total*0.05} />
         </ReceiptBodyItem>
         <ReceiptBodyItem>
           <div> TVQ(9.75%) : </div>
-          <div> ${receipt.total*0.0975} </div>
+          <CurrencyFormat value={receipt.total*0.0975} />
         </ReceiptBodyItem>
         <ReceiptBodyTotal>
           <div> Total : </div>
-          <div> ${receipt.total*1.05+receipt.total*0.0975} </div>
+          <CurrencyFormat value={receipt.total*1.05+receipt.total*0.0975} />
         </ReceiptBodyTotal>
       </ReceiptContainer>
       <BottomActionsContainer>
