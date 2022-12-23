@@ -88,8 +88,12 @@ export function ModifyReceiptPage() {
       if (data === undefined) {
         return;
       }
-      setSubTotal(data.items.reduce((total, item) => total + item.price, 0));
-      setReceipt(data);
+      const items = Array.from(data.items); 
+      if (data.items.length === 0 && data.total > 0) {
+        items.push({ id: `${data.id}__0`, name: 'Item #0', price: data.total});
+      }
+      setSubTotal(items.reduce((total, item) => total + item.price, 0));
+      setReceipt({...data, items: items});
     };
     getReceipt();
   }, []);
