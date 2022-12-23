@@ -13,13 +13,13 @@ const CurrencyNumberFormat = React.forwardRef(function NumberFormatCustom(props,
         onChange({
           target: {
             name: props.name,
-            value: values.value,
+            value: values.value === undefined || values.value === null ? 0 : values.value,
           },
         });
       }}
-      decimalScale={3}
+      decimalScale={2}
+      placeholder='0.00'
       thousandSeparator={false}
-      isNumericString
       suffix='$'
     />
   );

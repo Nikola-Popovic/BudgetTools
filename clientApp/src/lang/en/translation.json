@@ -1,7 +1,7 @@
 {
     "appBar": {
-        "altTitle": "Receipt Sharer",
-        "title": "Receipt Sharer",
+        "altTitle": "spliter.io",
+        "title": "spliter.io",
         "subtitle": "by Nikola Popovic "
     },
     "general": {
@@ -17,10 +17,16 @@
     "receipt": {
         "addPerson": "Add person",
         "addReceipt": "Add a receipt ",
+        "addReceiptItem": "Add an item",
         "amountDue": "Amount due",
         "contributedAmount": "Payer contribution",
         "contributionAmount": "Contribution amount",
         "playerName": "Name",
         "receiptNumber": "Receipt #"
+    }, 
+    "nav" : {
+        "home": "Home",
+        "receiptTracker": "Receipt Spliter",
+        "timeBudget": "Time Spliter"
     }
 }
