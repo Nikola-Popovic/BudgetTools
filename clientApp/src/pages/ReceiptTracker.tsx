@@ -131,8 +131,9 @@ export function ReceiptTracker() {
     refreshPlayer(playerId);
   };
 
-  const handleReceiptChange = (playerId: number, receiptId: number, newTotal: number) => {
-    receiptService.updateReceiptTotal(playerId, receiptId, newTotal);
+  const handleReceiptChange = (playerId: number, receiptId: number, newTotal: string) => {
+    const totalChange = parseFloat(newTotal);
+    receiptService.updateReceiptTotal(playerId, receiptId, totalChange);
     refreshPlayer(playerId);
   };
 
@@ -151,14 +152,14 @@ export function ReceiptTracker() {
     if (player === undefined) {
       return -1;
     }
-    const totalPaid = player.receipts.reduce((acc, receipt) => acc + receipt.total, 0);
+    const totalPaid = player.receipts.reduce((acc, receipt) => isNaN(receipt.total) ? acc : acc + receipt.total, 0);
     const totalForEach = total / players.size;
     return totalPaid - totalForEach;
   };
 
   const recalculateTotal = () : void => {
     const newTotal = Array.from(players)
-      .map(([_, player]) => player.receipts.reduce((acc, curr) => acc + curr.total, 0))
+      .map(([_, player]) => player.receipts.reduce((acc, curr) => isNaN(curr.total) ? acc : acc + curr.total, 0))
       .reduce((acc, curr) => acc + curr, 0);
     setTotal(newTotal);
   };
@@ -199,7 +200,8 @@ export function ReceiptTracker() {
                     variant="outlined"
                     value={receipt.total}
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
-                    onChange={(e) => handleReceiptChange(key, receipt.id, parseFloat(e.target.value))}
+                    readOnly={receipt.items.length > 0}
+                    onChange={(e) => handleReceiptChange(key, receipt.id, e.target.value)}
                   />
                   <ReceiptActions>
                     <Edit onClick={() => handleEditReceipt(receipt.id)}/>
@@ -219,7 +221,7 @@ export function ReceiptTracker() {
               {t('receipt.contributedAmount')}: 
               <AlignEnd>
                 <CurrencyFormat value={value.receipts.length > 0 ? 
-                  value.receipts.reduce((acc, val) => acc + val.total, 0) : 0} />
+                  value.receipts.reduce((acc, val) => isNaN(val.total) ? acc : acc + val.total, 0) : 0} />
               </AlignEnd>
             </Amount>
             -

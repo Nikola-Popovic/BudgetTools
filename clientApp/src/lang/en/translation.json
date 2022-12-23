@@ -17,6 +17,7 @@
     "receipt": {
         "addPerson": "Add person",
         "addReceipt": "Add a receipt ",
+        "addReceiptItem": "Add an item",
         "amountDue": "Amount due",
         "contributedAmount": "Payer contribution",
         "contributionAmount": "Contribution amount",

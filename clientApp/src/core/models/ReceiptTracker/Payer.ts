@@ -9,5 +9,12 @@ export interface Receipt {
     id: number;
     name: string;
     total: number;
-    items: number[];
+    payerId: number;
+    items: ReceiptItem[];
+}
+
+export interface ReceiptItem {
+    id: string;
+    name: string;
+    price: number;
 }

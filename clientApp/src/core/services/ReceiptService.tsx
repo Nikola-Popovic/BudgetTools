@@ -8,6 +8,7 @@ export interface IReceiptService {
   addPayer(card: Payer): Promise<void>;
   changePlayerName(id: number, name: string): Promise<void>
   getReceipt(receiptId: number): Promise<Receipt | undefined>;
+  updateReceipt(receipt: Receipt): Promise<void>;
   addReceipt(payerId: number): Promise<void>;
   removeReceipt(payerId: number, receiptId: number): Promise<void>;
   updateReceiptTotal(payerId: number, receiptId: number, total: number): Promise<void>;
@@ -42,7 +43,7 @@ class ReceiptServiceImpl implements IReceiptService {
   async addReceipt(payerId: number): Promise<void> {
     const player = await this.getPayer(payerId);
     if (player !== undefined) {
-      player.receipts.push({ id: this._nextReceiptId, total: 0, items: [], name: `Receipt ${this._nextReceiptId}` });
+      player.receipts.push({ id: this._nextReceiptId, total: 0, items: [], name: `Receipt ${this._nextReceiptId}`, payerId: payerId });
       this._nextReceiptId++;
     }
   }
@@ -56,6 +57,16 @@ class ReceiptServiceImpl implements IReceiptService {
       }
     });
     return receipt;
+  }
+
+  async updateReceipt(receipt: Receipt): Promise<void> {
+    const player = await this.getPayer(receipt.payerId);
+    if (player !== undefined) {
+      const receiptIndex = player.receipts.findIndex(r => r.id === receipt.id);
+      if (receiptIndex >= 0) {
+        player.receipts[receiptIndex] = receipt;
+      }
+    }
   }
 
   async updateReceiptTotal(payerId: number, receiptId: number, total: number): Promise<void> {
