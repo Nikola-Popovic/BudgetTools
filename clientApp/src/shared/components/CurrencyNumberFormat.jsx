@@ -17,6 +17,7 @@ const CurrencyNumberFormat = React.forwardRef(function NumberFormatCustom(props,
           },
         });
       }}
+      style={{ textAlign: 'end', fontFamily: 'monospace' }}
       decimalScale={2}
       placeholder='0.00'
       thousandSeparator={false}

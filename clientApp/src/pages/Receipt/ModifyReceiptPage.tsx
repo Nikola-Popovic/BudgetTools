@@ -98,7 +98,7 @@ export function ModifyReceiptPage() {
   useEffect(() => {
     const sub = receipt.items.reduce((total, item) => isNaN(item.price)? total : total + item.price, 0);
     setSubTotal(sub);
-    const total = calculateTotalWithTaxes(subTotal);
+    const total = calculateTotalWithTaxes(sub);
     setReceipt({ ...receipt, total: total});
   }, [receipt.items]);
 
@@ -158,6 +158,7 @@ export function ModifyReceiptPage() {
             <TextField
               id={`${item.id}-name`}
               key={`${item.id}-name`}
+              style={{width: '100px'}}
               value={item.name}
               onChange={(e) => changeReceiptItemName(item.id, e.target.value)}
             />

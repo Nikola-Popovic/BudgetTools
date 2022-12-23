@@ -200,7 +200,7 @@ export function ReceiptTracker() {
                     variant="outlined"
                     value={receipt.total}
                     InputProps={{ inputComponent: CurrencyNumberFormat as any }}
-                    readOnly={receipt.items.length > 0}
+                    disabled={receipt.items.length > 0}
                     onChange={(e) => handleReceiptChange(key, receipt.id, e.target.value)}
                   />
                   <ReceiptActions>
