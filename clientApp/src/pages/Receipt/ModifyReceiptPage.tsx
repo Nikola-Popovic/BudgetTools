@@ -102,8 +102,6 @@ export function ModifyReceiptPage() {
   useEffect(() => {
     const sub = receipt.items.reduce((total, item) => isNaN(item.price)? total : total + item.price, 0);
     setSubTotal(sub);
-    const total = calculateTotalWithTaxes(sub);
-    setReceipt({ ...receipt, total: total});
   }, [receipt.items]);
 
   const _cancelUpdate = () => {
@@ -111,7 +109,7 @@ export function ModifyReceiptPage() {
   };
 
   const _completeUpdate = () => {
-    receiptService.updateReceipt(receipt);
+    receiptService.updateReceipt({...receipt, total: calculateTotalWithTaxes(subTotal)});
     navigate(-1);
   };
 
@@ -196,7 +194,7 @@ export function ModifyReceiptPage() {
         </ReceiptBodyItem>
         <ReceiptBodyTotal>
           <div> Total : </div>
-          <CurrencyFormat value={receipt.total} />
+          <CurrencyFormat value={calculateTotalWithTaxes(subTotal)} />
         </ReceiptBodyTotal>
       </ReceiptContainer>
       <BottomActionsContainer>

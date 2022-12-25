@@ -11,7 +11,7 @@ export const APP_BAR_HEIGHT = '5vh';
 export const APP_BAR_GROW_HEIGHT = '6vh';
 
 interface IBarProps {
-  isCollapsed: boolean;
+  $isCollapsed: boolean;
 }
 
 const Bar = styled.div<IBarProps>`
@@ -28,9 +28,9 @@ const Bar = styled.div<IBarProps>`
     background-color: ${ColorConstants.AppBarColor};
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    height: ${props => props.isCollapsed ? APP_BAR_COLLAPSE_HEIGHT : APP_BAR_HEIGHT};
+    height: ${props => props.$isCollapsed ? APP_BAR_COLLAPSE_HEIGHT : APP_BAR_HEIGHT};
     &:hover {
-      height: ${(props) => props.isCollapsed ? APP_BAR_HEIGHT : APP_BAR_GROW_HEIGHT};
+      height: ${(props) => props.$isCollapsed ? APP_BAR_HEIGHT : APP_BAR_GROW_HEIGHT};
     }
 `;
 
@@ -40,14 +40,14 @@ const AppTitle = styled.div<IBarProps>`
   padding-right: 1vw;
   font-size: 1em;
   transition: all 0.3s ease-in-out;
-  transform: ${props => props.isCollapsed ? 'scale(0.9)' : 'scale(1)'};
+  transform: ${props => props.$isCollapsed ? 'scale(0.9)' : 'scale(1)'};
 `;
 
 const SubTitle = styled.div<IBarProps>`
   opacity: 0.8;
   font-size: 0.8em;
   transition: all 0.3s ease-in-out;
-  transform: ${props => props.isCollapsed ? 'scale(0.9)' : 'scale(1)'};
+  transform: ${props => props.$isCollapsed ? 'scale(0.9)' : 'scale(1)'};
 `;
 
 const AlignCenter = styled.div`
@@ -58,13 +58,13 @@ const AlignCenter = styled.div`
 `;
 
 type ArrowProps = IBarProps & {
-  isHovered: boolean;
+  $isHovered: boolean;
 }
 const Arrow = styled(ArrowForwardIosIcon)<ArrowProps> `
   animation: fadeInOut 1s infinite;
   transition: all 1s ease-in-out;
-  visibility: ${props => props.isHovered ? 'visible' : 'hidden'};
-  transform: ${props => props.isCollapsed ? 'rotate(270deg)' : 'rotate(90deg)'};
+  visibility: ${props => props.$isHovered ? 'visible' : 'hidden'};
+  transform: ${props => props.$isCollapsed ? 'rotate(270deg)' : 'rotate(90deg)'};
 `;
 
 export interface IAppBarProps {
@@ -81,16 +81,16 @@ export function AppBar(props : IAppBarProps) {
     props.onClick();
   };
 
-  return <Bar isCollapsed={isCollapsed} onClick={() => handleClick()} 
+  return <Bar $isCollapsed={isCollapsed} onClick={() => handleClick()} 
     onMouseEnter={(_ => setIsHovered(true))} onMouseLeave={(_ => setIsHovered(false))}>
     <AlignCenter>
-      <AppTitle isCollapsed={isCollapsed}>
+      <AppTitle $isCollapsed={isCollapsed}>
         {t('appBar.title')}
       </AppTitle>
-      <SubTitle isCollapsed={isCollapsed}>
+      <SubTitle $isCollapsed={isCollapsed}>
         {t('appBar.subtitle')}
       </SubTitle>
     </AlignCenter>
-    <Arrow isCollapsed={isCollapsed} isHovered={isHovered}/>
+    <Arrow $isCollapsed={isCollapsed} $isHovered={isHovered}/>
   </Bar>;
 }

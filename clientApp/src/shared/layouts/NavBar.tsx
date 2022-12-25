@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 export const APP_BAR_HEIGHT = '5vh';
 
 const Bar = styled.div<{isVisible: boolean}>`
-    display: flex;
+    display:  ${props => props.isVisible ? 'flex' : 'none'};
     flex-direction: row;
     width: 100%;
     padding: ${spacingS};
@@ -19,7 +19,6 @@ const Bar = styled.div<{isVisible: boolean}>`
     justify-content: center;
     font-family: ${FONT_FAMILLY};
     background-color: ${ColorConstants.PrimaryAccent};
-    visibility: ${props => props.isVisible ? 'visible' : 'hidden'};
     animation: ${props => props.isVisible ? 'slideIn 1s ease-in-out' : 'slideOut 1s ease-in-out'};
 `;
 

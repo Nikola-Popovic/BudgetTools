@@ -12,7 +12,6 @@ const CurrencyNumberFormat = React.forwardRef(function NumberFormatCustom(props,
       onValueChange={(values) => {
         onChange({
           target: {
-            name: props.name,
             value: values.value === undefined || values.value === null ? 0 : values.value,
           },
         });
@@ -27,7 +26,6 @@ const CurrencyNumberFormat = React.forwardRef(function NumberFormatCustom(props,
 });
 
 CurrencyNumberFormat.propTypes = {
-  name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };
 

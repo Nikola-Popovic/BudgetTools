@@ -5,7 +5,7 @@ import { Payer, Receipt } from '../models/ReceiptTracker/Payer';
 export interface IReceiptService {
   getPayers(): Promise<Map<number, Payer>>;
   getPayer(id: number): Promise<Payer | undefined>;
-  addPayer(card: Payer): Promise<void>;
+  addPayer(card: Payer): Promise<Payer>;
   changePlayerName(id: number, name: string): Promise<void>
   getReceipt(receiptId: number): Promise<Receipt | undefined>;
   updateReceipt(receipt: Receipt): Promise<void>;
@@ -28,9 +28,10 @@ class ReceiptServiceImpl implements IReceiptService {
     return this._players.get(id);
   }
 
-  async addPayer(payer: Payer): Promise<void> {
+  async addPayer(payer: Payer): Promise<Payer> {
     payer.id = this._nextPlayerId++;
     this._players.set(payer.id, payer);
+    return payer;
   }
 
   async changePlayerName(id: number, name: string): Promise<void> {

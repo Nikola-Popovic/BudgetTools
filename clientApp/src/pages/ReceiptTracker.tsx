@@ -91,10 +91,12 @@ export function ReceiptTracker() {
   const navigate = useNavigate();
   const [total, setTotal] = useState(0);
   const [players, setPayers] = useState(new Map<number, Payer>);
+  const [amountDues, setAmountDues] = useState(new Map<number, number>);
   
   const refreshPlayers = async () => {
     const data = await receiptService.getPayers();
     setPayers(data);
+    await refreshAmountDues();
   };
 
   const refreshPlayer = async (key: number) => {
@@ -107,22 +109,31 @@ export function ReceiptTracker() {
     setPayers(playersCopy);
   };
 
+  const refreshAmountDues = async () => { 
+    const amountDuesCopy = new Map(amountDues);
+    players.forEach((payer, key) => {
+      amountDuesCopy.set(key, getAmountDue(payer));
+    });
+    setAmountDues(amountDuesCopy);
+  };
+
   useEffect(() => {
     refreshPlayers();
   }, []);
 
   useEffect(() => {
-    const playersCopy = new Map(players);
-    Array.from(playersCopy).forEach(([key, player]) => {
-      player.amountDue = getAmountDue(key);
-    });
-    setPayers(playersCopy);
     recalculateTotal();
   }, [players]);
 
-  const _addColumn = () => {
+  useEffect(() => {
+    refreshAmountDues();
+  }, [total]);
+
+  const _addPayer = async () => {
     const newPayer = { name: 'Payer', receipts: [], amountDue: 0};
-    receiptService.addPayer(newPayer);
+    const amountDuesCopy = new Map(amountDues);
+    const payer = await receiptService.addPayer(newPayer);
+    amountDuesCopy.set(payer.id!, 0);
     refreshPlayers();
   };
 
@@ -147,12 +158,8 @@ export function ReceiptTracker() {
     refreshPlayers();
   };
 
-  const getAmountDue = (key: number) : number => {
-    const player = players.get(key);
-    if (player === undefined) {
-      return -1;
-    }
-    const totalPaid = player.receipts.reduce((acc, receipt) => isNaN(receipt.total) ? acc : acc + receipt.total, 0);
+  const getAmountDue = (payer: Payer) : number => {
+    const totalPaid = payer.receipts.reduce((acc, receipt) => isNaN(receipt.total) ? acc : acc + receipt.total, 0);
     const totalForEach = total / players.size;
     return totalPaid - totalForEach;
   };
@@ -174,7 +181,7 @@ export function ReceiptTracker() {
       <CurrencyFormat value={total}/> 
     </TotalContainer>
     <AlignEnd>
-      <Button variant="contained" color="secondary" onClick={() => _addColumn()}> 
+      <Button variant="contained" color="secondary" onClick={async () => await _addPayer()}> 
         {t('receipt.addPerson')}
       </Button>
     </AlignEnd>
@@ -233,7 +240,7 @@ export function ReceiptTracker() {
               {t('receipt.amountDue')}:
               <AlignEnd>
                 {value.amountDue > 0 && '+'}
-                <CurrencyFormat value={value.amountDue}/>
+                <CurrencyFormat value={amountDues.get(key) ?? 0}/>
               </AlignEnd>
             </AmountDue>
           </PayerTotals>
