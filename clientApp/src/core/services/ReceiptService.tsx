@@ -20,6 +20,7 @@ class ReceiptServiceImpl implements IReceiptService {
   private _nextPlayerId = 0;
   private _nextReceiptId = 0;
 
+
   async getPayers(): Promise<Map<number, Payer>> {
     return this._players;
   }

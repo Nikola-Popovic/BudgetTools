@@ -15,7 +15,7 @@ i18next
   .use(initReactI18next)
   .init({
     lng: 'en', // if you're using a language detector, do not define the lng option
-    fallbackLng: 'en',
+    fallbackLng: ['en', 'fr'],
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false // react already safes from xss

@@ -1,7 +1,7 @@
 {
     "appBar": {
-        "altTitle": "spliter.io",
-        "title": "spliter.io",
+        "altTitle": "splitr",
+        "title": "spliter",
         "subtitle": "by Nikola Popovic "
     },
     "general": {
@@ -22,6 +22,7 @@
         "amountDue": "Amount due",
         "contributedAmount": "Payer contribution",
         "contributionAmount": "Contribution amount",
+        "payer": "Payer",
         "playerName": "Name",
         "receiptNumber": "Receipt #",
         "removeTaxes": "Remove taxes"

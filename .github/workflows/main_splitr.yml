@@ -54,5 +54,4 @@ jobs:
           app-name: 'splitr'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_772C1A6A44844AE59B14226E42F098DF }}
-          package: dist
-          app-path: clientApp
+          package: .

@@ -131,7 +131,7 @@ export function ReceiptTracker() {
   }, [total]);
 
   const _addPayer = async () => {
-    const newPayer = { name: 'Payer', receipts: [], amountDue: 0};
+    const newPayer = { name: t('receipt.payer'), receipts: [], amountDue: 0};
     const amountDuesCopy = new Map(amountDues);
     const payer = await receiptService.addPayer(newPayer);
     amountDuesCopy.set(payer.id!, 0);
@@ -237,10 +237,10 @@ export function ReceiptTracker() {
               <AlignEnd> <CurrencyFormat value={total / players.size} /> </AlignEnd> 
             </Amount>
             --------------------------------
-            <AmountDue amount={amountDues.get(key)}> 
+            <AmountDue amount={amountDues.get(key) ?? 0}> 
               {t('receipt.amountDue')}:
               <AlignEnd>
-                {amountDues.get(key) > 0 && '+'}
+                {amountDues.get(key)! > 0 && '+'}
                 <CurrencyFormat value={amountDues.get(key) ?? 0}/>
               </AlignEnd>
             </AmountDue>

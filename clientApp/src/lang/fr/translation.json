@@ -1,7 +1,7 @@
 {
     "appBar": {
-        "altTitle": "React Starter",
-        "title": "React Starter",
+        "altTitle": "splitr",
+        "title": "splitr",
         "subtitle": "par Nikola Popovic "
     },
     "general": {
@@ -10,5 +10,23 @@
         "confirm": "Confirmer",
         "delete": "Supprimer",
         "update": "Modifier"
+    },
+    "receipt": {
+        "addPerson": "Ajouter",
+        "addReceipt": "Ajouter reçu",
+        "addReceiptItem": "Ajouter article",
+        "addTaxes": "Ajouter taxes",
+        "amountDue": "Somme due",
+        "contributedAmount": "Somme contribué",
+        "contributionAmount": "Contribution nécessaire",
+        "payer": "Contributeur",
+        "playerName": "Nom",
+        "receiptNumber": "Reçu #",
+        "removeTaxes": "Enlever les taxes"
+    }, 
+    "nav" : {
+        "home": "Home",
+        "receiptTracker": "Reçues",
+        "timeBudget": "Time Spliter"
     }
 }

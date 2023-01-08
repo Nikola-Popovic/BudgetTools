@@ -14,7 +14,7 @@ export function AppLayout() {
   const [isNavBarVisible, setIsNavBarVisible] = React.useState(true);
   return (
     <div className="App">
-      <AppBar onClick={() => setIsNavBarVisible(!isNavBarVisible)}></AppBar>
+      <AppBar></AppBar>
       <NavBar isVisible={isNavBarVisible}></NavBar>
       <AppContainer>
         <PageContent></PageContent>
