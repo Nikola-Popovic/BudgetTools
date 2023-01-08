@@ -18,11 +18,13 @@
         "addPerson": "Add person",
         "addReceipt": "Add a receipt ",
         "addReceiptItem": "Add an item",
+        "addTaxes": "Add taxes",
         "amountDue": "Amount due",
         "contributedAmount": "Payer contribution",
         "contributionAmount": "Contribution amount",
         "playerName": "Name",
-        "receiptNumber": "Receipt #"
+        "receiptNumber": "Receipt #",
+        "removeTaxes": "Remove taxes"
     }, 
     "nav" : {
         "home": "Home",

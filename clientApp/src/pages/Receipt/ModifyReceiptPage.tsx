@@ -10,6 +10,7 @@ import Button from '@mui/material/Button';
 import { CurrencyFormat } from '../../shared/components/CurrencyFormat';
 import CurrencyNumberFormat from '../../shared/components/CurrencyNumberFormat';
 import { TextField } from '@mui/material';
+import { Clear } from '@mui/icons-material';
 
 const UpdateContainer = styled.div`
     display: flex;
@@ -66,6 +67,7 @@ const ReceiptBodyTotal = styled(ReceiptSubContainer)`
 `;
 
 const ReceiptBodyItem = styled(ReceiptSubContainer)`
+  align-items: center;
 `;
 
 const tps = 0.05;
@@ -81,6 +83,7 @@ export function ModifyReceiptPage() {
   const navigate = useNavigate();
   const [receipt, setReceipt] = useState<Receipt>({ id: 0, payerId: 0, name: 'Receipt', total: 0, items: []});
   const [subTotal, setSubTotal] =useState(0);
+  const [addTaxes, setAddTaxes] = useState(false);
 
   useEffect(() => {
     const getReceipt = async () => {
@@ -109,7 +112,7 @@ export function ModifyReceiptPage() {
   };
 
   const _completeUpdate = () => {
-    receiptService.updateReceipt({...receipt, total: calculateTotalWithTaxes(subTotal)});
+    receiptService.updateReceipt({...receipt, total: !addTaxes ? subTotal : calculateTotalWithTaxes(subTotal)});
     navigate(-1);
   };
 
@@ -128,8 +131,16 @@ export function ModifyReceiptPage() {
     setReceipt(newReceipt);
   };
 
-  const changeReceiptItem = (id: string, itemCost: number) => {
+  const changeReceiptItem = (id: string, itemCost: number, index: number) => {
     const items = Array.from(receipt.items);
+    if (itemCost > 0 && index === items.length - 1) {
+      // Add an new item if the last item is not empty to speed up the process
+      items.push({
+        id: `${receipt.id}__${receipt.items.length++}`,
+        name: `Item #${receipt.items.length++}`,
+        price: 0
+      });
+    }
     items.find(item => item.id === id)!.price = itemCost;
     const newReceipt : Receipt = { ...receipt, items: items};
     setReceipt(newReceipt);
@@ -138,6 +149,16 @@ export function ModifyReceiptPage() {
   const changeReceiptItemName = (id: string, name: string) => {
     const items = Array.from(receipt.items);
     items.find(item => item.id === id)!.name = name;
+    const newReceipt : Receipt = { ...receipt, items: items};
+    setReceipt(newReceipt);
+  };
+
+  const removeReceiptItem = (id: string) => {
+    const items = Array.from(receipt.items);
+    const index = items.findIndex(item => item.id === id);
+    if (index > -1) {
+      items.splice(index, 1);
+    }
     const newReceipt : Receipt = { ...receipt, items: items};
     setReceipt(newReceipt);
   };
@@ -155,7 +176,7 @@ export function ModifyReceiptPage() {
           />
         </ReceiptTitle>
         <LineDivider />
-        { receipt.items.map(item => 
+        { receipt.items.map((item, index) => 
           <ReceiptBodyItem key={item.id}>
             <TextField
               id={`${item.id}-name`}
@@ -169,8 +190,9 @@ export function ModifyReceiptPage() {
               key={item.id}
               value={item.price}
               InputProps={{ inputComponent: CurrencyNumberFormat as any }}
-              onChange={(e) => changeReceiptItem(item.id, parseFloat(e.target.value))}
+              onChange={(e) => changeReceiptItem(item.id, parseFloat(e.target.value), index)}
             />
+            <Clear onClick={() => removeReceiptItem(item.id)}/>
           </ReceiptBodyItem>
         )}
         <BottomActionsContainer>
@@ -180,21 +202,33 @@ export function ModifyReceiptPage() {
           </Button>
         </BottomActionsContainer>
         <LineDivider />
-        <ReceiptBodyItem>
-          <div> Subtotal : </div>
-          <CurrencyFormat value={subTotal} />
-        </ReceiptBodyItem>
-        <ReceiptBodyItem>
-          <div> TPS(5%) : </div>
-          <CurrencyFormat value={subTotal*tps} />
-        </ReceiptBodyItem>
-        <ReceiptBodyItem>
-          <div> TVQ(9.75%) : </div>
-          <CurrencyFormat value={subTotal*tvq} />
-        </ReceiptBodyItem>
+        {
+          addTaxes && <>
+            <ReceiptBodyItem>
+              <div> Subtotal : </div>
+              <CurrencyFormat value={subTotal} />
+            </ReceiptBodyItem>
+            <ReceiptBodyItem>
+              <div> TPS(5%) : </div>
+              <CurrencyFormat value={subTotal*tps} />
+            </ReceiptBodyItem>
+            <ReceiptBodyItem>
+              <div> TVQ(9.75%) : </div>
+              <CurrencyFormat value={subTotal*tvq} />
+            </ReceiptBodyItem>
+            <Button variant="outlined" onClick={() => setAddTaxes(false)}> 
+              {t('receipt.removeTaxes')}
+            </Button>
+          </>
+        }
+        {
+          !addTaxes && <Button variant="contained" color="secondary" onClick={() => setAddTaxes(true)}> 
+            {t('receipt.addTaxes')}
+          </Button>
+        }
         <ReceiptBodyTotal>
           <div> Total : </div>
-          <CurrencyFormat value={calculateTotalWithTaxes(subTotal)} />
+          <CurrencyFormat value={!addTaxes ? subTotal : calculateTotalWithTaxes(subTotal)} />
         </ReceiptBodyTotal>
       </ReceiptContainer>
       <BottomActionsContainer>

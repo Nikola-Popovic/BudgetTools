@@ -236,10 +236,10 @@ export function ReceiptTracker() {
               <AlignEnd> <CurrencyFormat value={total / players.size} /> </AlignEnd> 
             </Amount>
             --------------------------------
-            <AmountDue amount={value.amountDue}> 
+            <AmountDue amount={amountDues.get(key)}> 
               {t('receipt.amountDue')}:
               <AlignEnd>
-                {value.amountDue > 0 && '+'}
+                {amountDues.get(key) > 0 && '+'}
                 <CurrencyFormat value={amountDues.get(key) ?? 0}/>
               </AlignEnd>
             </AmountDue>
