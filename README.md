@@ -2,6 +2,8 @@
 
 Small app to split receipts shared by multiple payers.
 
+https://splitr.azurewebsites.net
+
 ![Receipt Tracker](https://github.com/Nikola-Popovic/ReceiptTracker/blob/main/doc/receiptSharer.gif)
 
 # Installation
