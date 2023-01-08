@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: clientApp
+          path: clientApp/dist/*
 
   deploy:
     runs-on: ubuntu-latest

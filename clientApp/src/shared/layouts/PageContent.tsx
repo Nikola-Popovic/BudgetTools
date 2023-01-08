@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Outlet } from 'react-router-dom';
-import { spacingXL } from '../styling/StylingConstants';
+import { spacingM, spacingL } from '../styling/StylingConstants';
 
 const PageLayout = styled.div`
-    margin: ${spacingXL};
+    margin: ${spacingL} ${spacingM};
     width: 100%;
     display: flex;
     flex-direction: column;

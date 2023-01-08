@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import i18next from '../shared/lang/i18next';
 import Button from '@mui/material/Button';
 import CurrencyNumberFormat from '../shared/components/CurrencyNumberFormat';
-import { contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS } from '../shared/styling/StylingConstants';
+import { contentXL, contentXs, contentXXL, spacingL, spacingM, spacingS, spacingXs } from '../shared/styling/StylingConstants';
 import styled from 'styled-components';
 import { TextField } from '@mui/material';
 import { Clear, Edit } from '@mui/icons-material';
@@ -31,7 +31,7 @@ const TotalContainer = styled(Amount)`
 const AlignEnd = styled.div`
   display: flex;
   justify-content: flex-end;
-  margin: ${spacingS};
+  margin: ${spacingS} ${spacingXs};
 `;
 
 const PayerTotals = styled.div`
@@ -47,6 +47,7 @@ const PayerTotals = styled.div`
 const PayersContainer = styled.div`
   display: flex;
   flex-direction: row;
+  overflow-x: auto;
 `;
 
 const PayerColumn = styled.div`
@@ -77,7 +78,7 @@ const ReceiptColumn = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: ${spacingM};
-  margin: ${spacingM};
+  margin: ${spacingM} ${spacingS};
   align-items: center;
   justify-content: center;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
